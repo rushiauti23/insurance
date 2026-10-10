@@ -1,0 +1,1033 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Document Analyst Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column under a sticky section bar. The hero is a live comparison (source vs entry),
+   because the whole job is comparing what a document says with what a system holds.
+   Each section pairs one first-principle statement with one instrument you can operate. */
+:root{
+  --bg:#E8EDF1; --paper:#FAFBFC; --ink:#12212E; --ink-2:#4B5C6A; --line:#C3CFD8;
+  --accent:#0A6C7E; --on-accent:#FFFFFF; --mark:#F5D75A;
+  --bad:#B02E24; --good:#1C7549; --warn:#9A5B08;
+  --bad-bg:#F8E3E0; --good-bg:#DDF0E5; --warn-bg:#F7EAD2;
+  --font-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --font-body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  --font-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B141C; --paper:#121E28; --ink:#E5ECF1; --ink-2:#9FAFBC; --line:#273949;
+    --accent:#55C4D6; --on-accent:#05222A; --mark:#7B6712;
+    --bad:#FF9082; --good:#74D9A4; --warn:#F2B96A;
+    --bad-bg:#3A1A18; --good-bg:#12301F; --warn-bg:#392A0F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B141C; --paper:#121E28; --ink:#E5ECF1; --ink-2:#9FAFBC; --line:#273949;
+  --accent:#55C4D6; --on-accent:#05222A; --mark:#7B6712;
+  --bad:#FF9082; --good:#74D9A4; --warn:#F2B96A;
+  --bad-bg:#3A1A18; --good-bg:#12301F; --warn-bg:#392A0F;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 1rem/1.6 var(--font-body);-webkit-text-size-adjust:100%}
+.wrap{max-width:1040px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;line-height:1.1;letter-spacing:-0.015em;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:800;letter-spacing:-0.025em}
+h2{font-size:clamp(1.6rem,3.4vw,2.3rem)}
+h3{font-size:1.15rem;letter-spacing:-0.005em}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--font-data)}
+.muted{color:var(--ink-2)}
+.small{font-size:.875rem}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:20px;min-height:48px}
+.brand{font-family:var(--font-display);font-weight:800;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.bar nav{display:flex;gap:4px;overflow-x:auto;min-width:0;scrollbar-width:thin}
+.bar nav a{white-space:nowrap;text-decoration:none;color:var(--ink-2);padding:6px 10px;border-radius:999px;font-size:.875rem}
+.bar nav a:hover{color:var(--ink);background:var(--paper)}
+
+/* sections */
+main section{padding-block:clamp(44px,7vw,84px);border-top:1px solid var(--line);scroll-margin-top:60px}
+main section:first-of-type{border-top:0}
+.sec-head{display:grid;gap:14px;max-width:46rem;margin-bottom:clamp(24px,4vw,40px)}
+.sec-head p{color:var(--ink-2)}
+.fp{color:var(--ink)}
+.fp b{font-weight:600;margin-right:.5em}
+.fp span{background:var(--mark);color:var(--ink);padding:.05em .3em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+/* instruments */
+.inst{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:clamp(16px,3vw,24px)}
+.field{display:grid;gap:6px;min-width:0}
+.field label,.lab{font-size:.8125rem;font-weight:600;color:var(--ink-2)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.55rem .65rem;width:100%;min-width:0}
+input.mono{font-family:var(--font-data)}
+.btn{background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);border-radius:4px;padding:.55rem .95rem;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.3rem .8rem;font-size:.875rem;color:var(--ink)}
+.chip:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;padding:.1rem .5rem;border-radius:3px;white-space:nowrap}
+.tag.pass{background:var(--good-bg);color:var(--good)}
+.tag.fail{background:var(--bad-bg);color:var(--bad)}
+.tag.note{background:var(--warn-bg);color:var(--warn)}
+.tag.plain{background:var(--bg);color:var(--ink-2);border:1px solid var(--line)}
+
+/* hero */
+.hero{display:grid;gap:clamp(28px,5vw,56px);grid-template-columns:minmax(0,1fr);align-items:start;padding-block:clamp(36px,6vw,72px)}
+@media(min-width:900px){.hero{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+.hero-copy{display:grid;gap:20px}
+.hero-copy p{max-width:36rem;color:var(--ink-2);font-size:1.0625rem}
+.notice{border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:.875rem;color:var(--ink-2);max-width:36rem}
+.notice b{color:var(--ink)}
+.diff-grid{display:grid;gap:14px}
+.cmp{display:grid;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px 14px;overflow-x:auto}
+.cmp .ln{display:grid;grid-template-columns:4.6rem 1fr;gap:10px;align-items:baseline}
+.cmp .ln > span:first-child{font-size:.8125rem;color:var(--ink-2);font-weight:600}
+.cmp .chars{font-family:var(--font-data);font-size:1.125rem;white-space:pre;letter-spacing:.02em}
+.cmp .chars i{font-style:normal}
+.cmp .chars i.d{background:var(--mark);color:var(--ink);box-shadow:0 0 0 2px var(--mark);border-radius:1px}
+.cmp .chars i.gap{opacity:.7}
+.verdict{display:grid;gap:6px}
+.verdict strong{font-family:var(--font-display);font-size:1.25rem}
+
+/* chain */
+.chain{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:0;list-style:none;margin:0 0 20px;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--paper)}
+.chain li{display:contents}
+.chain button{background:transparent;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 12px 12px;text-align:left;display:grid;gap:2px;margin:-0px;border-radius:0}
+.chain button b{font-family:var(--font-display);font-size:1rem}
+.chain button span{font-size:.75rem;color:var(--ink-2)}
+.chain button[aria-selected="true"]{background:var(--accent);color:var(--on-accent)}
+.chain button[aria-selected="true"] span{color:var(--on-accent);opacity:.85}
+.panel-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.panel-grid h3{margin-bottom:6px}
+.panel-grid p{color:var(--ink-2)}
+
+/* accordions */
+details.acc{border-top:1px solid var(--line)}
+details.acc:last-of-type{border-bottom:1px solid var(--line)}
+details.acc summary{list-style:none;cursor:pointer;display:flex;gap:14px;align-items:baseline;padding:16px 4px;font-family:var(--font-display);font-weight:700;font-size:1.15rem}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"+";margin-left:auto;font-family:var(--font-data);color:var(--accent);font-weight:500}
+details.acc[open] summary::after{content:"\2212"}
+details.acc .body{padding:0 4px 20px;display:grid;gap:12px;max-width:44rem;color:var(--ink-2)}
+details.acc .body .do{color:var(--ink)}
+details.acc .body .do b{font-weight:600}
+.modnum{font-family:var(--font-data);font-weight:500;font-size:.875rem;color:var(--ink-2);min-width:4.2rem}
+
+/* anatomy */
+.split{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.split{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}}
+.decl{background:var(--paper);border:1px solid var(--ink-2);border-radius:3px;padding:14px;display:grid;gap:12px}
+.decl-title{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:8px;font-family:var(--font-display);font-weight:700}
+.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.cell{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:8px 10px;display:grid;gap:2px;min-width:0}
+.cell small{font-size:.75rem;color:var(--ink-2);font-weight:600}
+.cell span{font-family:var(--font-data);font-size:.875rem;overflow-wrap:anywhere}
+.cell[aria-pressed="true"]{border-color:var(--accent);background:var(--mark);}
+.cell[aria-pressed="true"] small,.cell[aria-pressed="true"] span{color:var(--ink)}
+.sticky-detail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start}
+@media(max-width:899px){.sticky-detail{position:static}}
+.dl{display:grid;gap:12px}
+.dl div{display:grid;gap:2px}
+.dl dt{font-size:.8125rem;font-weight:600;color:var(--ink-2)}
+.dl dd{margin:0}
+
+/* authority ladder */
+.ladder{list-style:none;margin:0;padding:0;display:grid;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--paper)}
+.ladder li{display:grid;grid-template-columns:minmax(0,9.5rem) minmax(0,1fr);gap:4px 16px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ladder li:last-child{border-bottom:0}
+.ladder b{font-family:var(--font-display)}
+.ladder span{color:var(--ink-2);font-size:.9375rem}
+@media(max-width:560px){.ladder li{grid-template-columns:1fr}}
+.quiz{display:grid;gap:18px}
+.q{display:grid;gap:10px}
+.q .opts{display:grid;gap:8px}
+.opt{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.6rem .8rem}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--good-bg);border-color:var(--good);color:var(--ink)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--ink)}
+.expl{font-size:.9375rem;color:var(--ink-2)}
+
+/* validators */
+.tools{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tool{display:grid;gap:12px;align-content:start}
+.tool .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.results{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.results li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;font-size:.9375rem}
+
+/* audit desk */
+.desk{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.desk{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}}
+.paper{background:var(--paper);border:1px solid var(--ink-2);border-radius:3px;padding:14px;display:grid;gap:10px;align-content:start}
+.paper h3{border-bottom:2px solid var(--ink);padding-bottom:8px}
+.kv{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.kv li{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.kv li:last-child{border-bottom:0}
+.kv .k{font-size:.8125rem;font-weight:600;color:var(--ink-2)}
+.kv .v{font-family:var(--font-data);font-size:.875rem;overflow-wrap:anywhere}
+.entry{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.erow{display:grid;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.erow .top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.erow .lbl{font-size:.8125rem;font-weight:600;color:var(--ink-2)}
+.erow .val{font-family:var(--font-data);font-size:.9375rem;overflow-wrap:anywhere}
+.flag{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.25rem .75rem;font-size:.8125rem}
+.flag[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:var(--ink);font-weight:600}
+.erow.hit{border-color:var(--good);background:var(--good-bg)}
+.erow.miss{border-color:var(--bad);background:var(--bad-bg)}
+.erow.false{border-color:var(--warn);background:var(--warn-bg)}
+.erow .why{font-size:.875rem;color:var(--ink)}
+.score{display:grid;gap:6px;margin-top:6px}
+.score strong{font-family:var(--font-display);font-size:1.25rem}
+.row-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* scenarios */
+.md{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:820px){.md{grid-template-columns:minmax(0,17rem) minmax(0,1fr)}}
+.mlist{list-style:none;margin:0;padding:0;display:grid;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--paper)}
+.mlist button{width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:10px 12px;display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:6px;border-radius:0}
+.mlist li:last-child button{border-bottom:0}
+.mlist button .n{font-family:var(--font-data);color:var(--ink-2)}
+.mlist button[aria-current="true"]{background:var(--accent);color:var(--on-accent)}
+.mlist button[aria-current="true"] .n{color:var(--on-accent)}
+.pair{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.pair div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:grid;gap:4px;min-width:0}
+.pair .mono{overflow-wrap:anywhere;font-size:.9375rem}
+.pair div.bad{border-color:var(--bad)}
+.stagebar{display:flex;flex-wrap:wrap;gap:6px}
+.stagebar span{font-size:.8125rem;padding:.2rem .6rem;border:1px solid var(--line);border-radius:999px;color:var(--ink-2)}
+.stagebar span.on{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);font-weight:600}
+
+/* whys + log */
+.whys{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.whys li{display:grid;grid-template-columns:3.2rem minmax(0,1fr);gap:10px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:4px}
+.whys li .w{font-family:var(--font-data);color:var(--ink-2);font-size:.875rem}
+.whys li.fix{border-color:var(--good);background:var(--good-bg)}
+.gaps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.gapbtn{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:grid;gap:2px}
+.gapbtn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.gapbtn b{font-family:var(--font-display)}
+.gapbtn span{font-size:.875rem;color:var(--ink-2)}
+.logform{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.logform .wide{grid-column:1/-1}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:.875rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--bg);font-weight:600;color:var(--ink-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+
+/* checklist */
+.cl{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+fieldset{border:0;margin:0;padding:0;min-width:0;display:grid;gap:8px;align-content:start}
+legend{font-family:var(--font-display);font-weight:700;font-size:1.1rem;padding:0;margin-bottom:8px}
+.tick{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;font-size:.9375rem;cursor:pointer}
+.tick input{width:1.1rem;height:1.1rem;margin:.2rem 0 0;padding:0;accent-color:var(--accent)}
+.tick input:checked + span{color:var(--ink-2);text-decoration:line-through;text-decoration-color:var(--ink-2)}
+.meter{height:8px;background:var(--bg);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);transition:width .25s ease}
+.progress{display:grid;gap:6px;margin-bottom:18px}
+
+/* plan + metrics */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem 1rem}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.hub{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.metrics{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.metric{display:grid;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px}
+.metric strong{font-family:var(--font-display);font-size:1.7rem;font-variant-numeric:tabular-nums}
+.inputs{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+footer{padding-block:36px 60px;border-top:1px solid var(--line);color:var(--ink-2);font-size:.9375rem}
+footer .wrap{display:grid;gap:10px;max-width:46rem;margin-inline:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">Analyst Field Guide</a>
+    <nav aria-label="Sections">
+      <a href="#principles">Principles</a><a href="#chain">The chain</a><a href="#anatomy">Anatomy</a>
+      <a href="#authority">Authority</a><a href="#rules">Rules</a><a href="#desk">Audit desk</a>
+      <a href="#scenarios">Scenarios</a><a href="#rootcause">Root cause</a><a href="#checklist">Checklist</a>
+      <a href="#modules">Modules</a><a href="#plan">90 days</a><a href="#metrics">Metrics</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+<div class="hero">
+  <div class="hero-copy">
+    <h1>Insurance document processing, from first principles</h1>
+    <p>A policy is a contract. Every document you handle is evidence of that contract, and every field you enter is a claim about it. Learn the few ideas underneath the work and the procedures stop being things to memorize.</p>
+    <p>Start with the instrument on the right. Type what the source says and what you entered. The page marks the deviation, names the error type and shows the control that prevents it.</p>
+    <div class="notice"><b>Before you use this.</b> Adapt every step to your company's official SOPs, systems and compliance rules. Never put client, policy, PHI or PII data into personal tools. Every example on this page is fictional.</div>
+  </div>
+
+  <div class="inst diff-grid" id="diff" aria-label="Source and entry comparison">
+    <h3>Audit is comparison plus rules</h3>
+    <div class="field"><label for="src">Source says</label><input id="src" class="mono" value="ABC-123456" spellcheck="false" autocomplete="off"></div>
+    <div class="field"><label for="ent">You entered</label><input id="ent" class="mono" value="ABC-123465" spellcheck="false" autocomplete="off"></div>
+    <div class="cmp" aria-live="polite">
+      <div class="ln"><span>Source</span><span class="chars" id="srcOut"></span></div>
+      <div class="ln"><span>Entered</span><span class="chars" id="entOut"></span></div>
+    </div>
+    <div class="verdict" aria-live="polite"><strong id="verdict"></strong><p id="explain" class="muted"></p><p id="fix"></p></div>
+    <div class="chips" id="presets" role="group" aria-label="Examples"></div>
+  </div>
+</div>
+
+<section id="principles">
+  <div class="sec-head">
+    <h2>Seven ideas hold the whole job together</h2>
+    <p>Everything in insurance document processing reduces to a few fundamentals. Open each one, then read what it asks you to do differently at your desk.</p>
+  </div>
+  <div id="principleList"></div>
+</section>
+
+<section id="chain">
+  <div class="sec-head">
+    <h2>A process is a transformation chain</h2>
+    <p class="fp"><b>First principle</b><span>Information is lost, corrupted, assumed or misplaced at a link in the chain. Find the link, and you find the control.</span></p>
+  </div>
+  <ul class="chain" id="chainRail" role="tablist" aria-label="Process steps"></ul>
+  <div class="inst" id="chainPanel" role="tabpanel" aria-live="polite"></div>
+</section>
+
+<section id="anatomy">
+  <div class="sec-head">
+    <h2>Anatomy of a policy</h2>
+    <p class="fp"><b>First principle</b><span>Data only has meaning inside the contract structure.</span></p>
+    <p>This is a fictional declarations page. Select any field to see why it matters, how to validate it and how it usually goes wrong.</p>
+  </div>
+  <div class="split">
+    <div class="decl">
+      <div class="decl-title"><span>Declarations: Commercial General Liability</span><span class="mono small muted">Sample, fictional</span></div>
+      <div class="cells" id="cells"></div>
+    </div>
+    <div class="inst sticky-detail" id="cellDetail" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="authority">
+  <div class="sec-head">
+    <h2>Documents have different authority</h2>
+    <p class="fp"><b>First principle</b><span>A document is evidence of the contract. Which document controls a field depends on what the document is.</span></p>
+    <p>The order below is the general pattern. Your company's source hierarchy is the one that counts, so confirm it in your SOP.</p>
+  </div>
+  <div class="split">
+    <ol class="ladder" id="ladder"></ol>
+    <div class="inst quiz" id="quiz"></div>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="sec-head">
+    <h2>Validate by meaning, not by looks</h2>
+    <p class="fp"><b>First principle</b><span>A value can be well formed and still wrong. Rules catch what reading misses.</span></p>
+    <p>Three checkers built from the quick-reference rules. The starting values reproduce three of the practical examples. Change any number and watch the verdict move.</p>
+  </div>
+  <div class="tools">
+    <div class="inst tool" id="toolDates">
+      <h3>Dates</h3>
+      <div class="field"><label for="dIssue">Issue date</label><input id="dIssue" type="date" value="2026-12-15"></div>
+      <div class="field"><label for="dEff">Effective date</label><input id="dEff" type="date" value="2027-01-01"></div>
+      <div class="field"><label for="dExp">Expiration date</label><input id="dExp" type="date" value="2028-01-01"></div>
+      <ul class="results" id="dRes" aria-live="polite"></ul>
+    </div>
+    <div class="inst tool" id="toolMoney">
+      <h3>Premium, tax, fees, total</h3>
+      <div class="two">
+        <div class="field"><label for="mPrem">Premium</label><input id="mPrem" type="number" min="0" step="0.01" value="10000"></div>
+        <div class="field"><label for="mTax">Tax</label><input id="mTax" type="number" min="0" step="0.01" value="300"></div>
+        <div class="field"><label for="mFee">Fees</label><input id="mFee" type="number" min="0" step="0.01" value="50"></div>
+        <div class="field"><label for="mDoc">Total on document</label><input id="mDoc" type="number" min="0" step="0.01" value="10350"></div>
+      </div>
+      <div class="field"><label for="mSys">Value in the system's Premium field</label><input id="mSys" type="number" min="0" step="0.01" value="10350"></div>
+      <ul class="results" id="mRes" aria-live="polite"></ul>
+    </div>
+    <div class="inst tool" id="toolLimits">
+      <h3>Limits</h3>
+      <div class="two">
+        <div class="field"><label for="lOcc">Each Occurrence</label><input id="lOcc" type="number" min="0" step="1000" value="1000000"></div>
+        <div class="field"><label for="lAgg">General Aggregate</label><input id="lAgg" type="number" min="0" step="1000" value="2000000"></div>
+      </div>
+      <div class="field"><label for="lSys">Value in the system's Each Occurrence field</label><input id="lSys" type="number" min="0" step="1000" value="2000000"></div>
+      <ul class="results" id="lRes" aria-live="polite"></ul>
+    </div>
+  </div>
+</section>
+
+<section id="desk">
+  <div class="sec-head">
+    <h2>The audit desk</h2>
+    <p class="fp"><b>First principle</b><span>An error is a deviation. Find it by comparing the entry to the source and to the rules.</span></p>
+    <p>Read the source on the left. Flag every entry on the right that deviates, then check your audit. Each case hides four errors among eight fields. The people and companies are invented.</p>
+  </div>
+  <div class="row-actions" id="caseTabs" role="group" aria-label="Cases" style="margin-bottom:16px"></div>
+  <div class="desk">
+    <div class="paper" id="deskSrc"></div>
+    <div class="paper" id="deskEnt"></div>
+  </div>
+  <div class="row-actions" style="margin-top:16px">
+    <button class="btn" id="deskCheck" type="button">Check my audit</button>
+    <button class="btn ghost" id="deskReset" type="button">Start this case again</button>
+  </div>
+  <div class="score" id="deskScore" aria-live="polite"></div>
+</section>
+
+<section id="scenarios">
+  <div class="sec-head">
+    <h2>Ten errors, ten principles</h2>
+    <p class="fp"><b>First principle</b><span>Every error breaks one rule about what a field means. Name the rule and the same error cannot recur.</span></p>
+  </div>
+  <div class="md">
+    <ul class="mlist" id="scList"></ul>
+    <div class="inst" id="scDetail" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="rootcause">
+  <div class="sec-head">
+    <h2>Audit is a feedback loop</h2>
+    <p class="fp"><b>First principle</b><span>Fix the system, not just the instance. A finding is data about a process.</span></p>
+    <p>When feedback arrives, do not take it personally. Find the exact field and source, decide which kind of gap it was, then ask why until you reach something you can change.</p>
+  </div>
+  <div class="split">
+    <div class="inst" style="display:grid;gap:14px;align-content:start">
+      <h3>Five whys: wrong effective date</h3>
+      <ol class="whys" id="whys"></ol>
+      <div class="row-actions"><button class="btn" id="whyNext" type="button">Ask why</button><button class="btn ghost" id="whyReset" type="button">Start over</button></div>
+    </div>
+    <div class="inst" style="display:grid;gap:14px;align-content:start">
+      <h3>What kind of gap was it?</h3>
+      <div class="gaps" id="gaps"></div>
+      <p id="gapOut" class="muted" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div class="inst" style="margin-top:20px;display:grid;gap:14px">
+    <h3>Error log</h3>
+    <p class="muted small">Use anonymised or fictional entries only. This log lives in the page and is gone when you close it, so copy it into your approved company repository.</p>
+    <form id="logForm" class="logform">
+      <div class="field"><label for="lgDate">Date</label><input id="lgDate" type="date" required></div>
+      <div class="field"><label for="lgCase">Case ID</label><input id="lgCase" required placeholder="12347"></div>
+      <div class="field"><label for="lgField">Field</label><input id="lgField" required placeholder="Effective date"></div>
+      <div class="field"><label for="lgExp">Expected</label><input id="lgExp" required placeholder="01/01/2025"></div>
+      <div class="field"><label for="lgAct">Actual</label><input id="lgAct" required placeholder="12/15/2024"></div>
+      <div class="field"><label for="lgType">Error type</label>
+        <select id="lgType"><option>Wrong field</option><option>Omission</option><option>Transposition</option><option>Wrong date</option><option>Wrong party</option><option>Wrong limit</option><option>Wrong amount</option><option>Duplicate</option><option>Missing document</option><option>Misclassification</option></select></div>
+      <div class="field"><label for="lgImpact">Audit impact</label><select id="lgImpact"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+      <div class="field wide"><label for="lgRoot">Root cause</label><input id="lgRoot" required placeholder="Confused issue and effective date"></div>
+      <div class="field wide"><label for="lgPrev">Prevention</label><input id="lgPrev" required placeholder="Highlight date labels before extracting"></div>
+      <div class="row-actions wide"><button class="btn" type="submit">Add to log</button><button class="btn ghost" type="button" id="logCopy">Copy log as text</button></div>
+    </form>
+    <textarea id="logText" rows="6" readonly hidden aria-label="Log text to copy"></textarea>
+    <div class="tablewrap"><table><thead><tr><th>Date</th><th>Case ID</th><th>Field</th><th>Expected</th><th>Actual</th><th>Error type</th><th>Root cause</th><th>Prevention</th><th>Impact</th><th></th></tr></thead><tbody id="logBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <div class="sec-head">
+    <h2>Put memory outside your head</h2>
+    <p class="fp"><b>First principle</b><span>Humans have limited working memory. A checklist is memory that does not get tired.</span></p>
+    <p>The audit-proofing checklist, ready to use each day. Ticks are remembered in this browser only.</p>
+  </div>
+  <div class="inst">
+    <div class="progress"><div class="row-actions" style="justify-content:space-between"><strong id="clCount" class="tnum"></strong><button class="btn ghost" id="clReset" type="button">Clear all ticks</button></div><div class="meter" aria-hidden="true"><i id="clBar" style="width:0"></i></div></div>
+    <div class="cl" id="clBody"></div>
+  </div>
+</section>
+
+<section id="modules">
+  <div class="sec-head">
+    <h2>Ten learning modules</h2>
+    <p class="fp"><b>First principle</b><span>Learn one idea, then drill it on real work until it is a habit.</span></p>
+  </div>
+  <div id="modList"></div>
+</section>
+
+<section id="plan">
+  <div class="sec-head">
+    <h2>Ninety days, then a hub you maintain</h2>
+    <p class="fp"><b>First principle</b><span>Prevention beats detection. Build the habits that raise first-pass yield, then store what you learn where the team can reuse it.</span></p>
+  </div>
+  <div class="split">
+    <div class="inst">
+      <div class="tabs" role="tablist" aria-label="Learning phases" id="planTabs"></div>
+      <div id="planPanel" role="tabpanel" aria-live="polite" style="display:grid;gap:14px"></div>
+    </div>
+    <div class="inst" style="display:grid;gap:12px;align-content:start">
+      <h3>Daily habits</h3>
+      <ul style="margin:0;padding-left:1.1rem;display:grid;gap:6px;color:var(--ink-2)">
+        <li>10 minutes reviewing yesterday's errors.</li>
+        <li>One new glossary term per day.</li>
+        <li>One self-audit per day.</li>
+        <li>End-of-day 5-minute desk reset.</li>
+      </ul>
+      <h3>Weekly</h3>
+      <p class="muted">Every Friday, pick one repeat error and design a prevention. Share it in the team huddle and re-audit after one week.</p>
+    </div>
+  </div>
+  <div class="inst" style="margin-top:20px;display:grid;gap:12px">
+    <div class="row-actions" style="justify-content:space-between"><h3>Knowledge hub, in your approved wiki</h3><strong id="hubCount" class="tnum"></strong></div>
+    <p class="muted small">Build it in SharePoint, Notion or OneNote, whichever your company approves. Tick a section when it exists. Tag everything by line of business, document type, system, error type and difficulty. Keep one owner, a monthly review, version numbers and a last-updated date.</p>
+    <div class="hub" id="hub"></div>
+  </div>
+</section>
+
+<section id="metrics">
+  <div class="sec-head">
+    <h2>Measure first-pass yield, not only accuracy</h2>
+    <p class="fp"><b>First principle</b><span>One wrong field spoils a whole case. The stricter the measure, the earlier it warns you.</span></p>
+    <p>Enter a week of your own counts, or keep the sample numbers and see how they relate. Audit score comes from your QA team, so it is not calculated here.</p>
+  </div>
+  <div class="inst" style="display:grid;gap:18px">
+    <div class="inputs">
+      <div class="field"><label for="xCases">Cases processed</label><input id="xCases" type="number" min="0" value="40"></div>
+      <div class="field"><label for="xClean">Cases right first time</label><input id="xClean" type="number" min="0" value="36"></div>
+      <div class="field"><label for="xFields">Fields checked</label><input id="xFields" type="number" min="0" value="520"></div>
+      <div class="field"><label for="xWrong">Fields wrong</label><input id="xWrong" type="number" min="0" value="5"></div>
+      <div class="field"><label for="xRepeat">Of those, repeat errors</label><input id="xRepeat" type="number" min="0" value="1"></div>
+      <div class="field"><label for="xExc">Exceptions raised</label><input id="xExc" type="number" min="0" value="6"></div>
+      <div class="field"><label for="xMin">Minutes worked on cases</label><input id="xMin" type="number" min="0" value="1200"></div>
+    </div>
+    <div class="metrics" id="metricOut" aria-live="polite"></div>
+    <p id="metricNote" class="muted"></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>This guide gives you a repeatable system: understand the contract, respect the source hierarchy, validate every field by its meaning, cross-check identifiers, prevent assumptions and learn from every audit.</p>
+    <p>The knowledge hub becomes your external memory, so you do not have to hold everything in your head. Adapt it to your company's official SOPs and keep real client data out of personal tools.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const el = (tag, props = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  n.append(...kids);
+  return n;
+};
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* storage unavailable */ } }
+};
+const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
+const pct = (n) => (Number.isFinite(n) ? (n * 100).toFixed(1) + '%' : 'n/a');
+const num = (id) => { const v = parseFloat($(id).value); return Number.isFinite(v) ? Math.max(0, v) : NaN; };
+
+/* ---------- hero: source vs entry ---------- */
+function classify(s, e) {
+  if (s === e) return { t: 'Match', x: 'Every character agrees with the source.', f: 'A match does not prove the field is right. Confirm the label and the role before you move on.' };
+  if (s.trim().toLowerCase().replace(/\s+/g, ' ') === e.trim().toLowerCase().replace(/\s+/g, ' '))
+    return { t: 'Format deviation', x: 'Only case or spacing differs.', f: 'Copy the value exactly as the source shows it, unless your SOP says to normalise it.' };
+  const sorted = (v) => [...v].sort().join('');
+  if (s.length === e.length && sorted(s) === sorted(e))
+    return { t: 'Transposition', x: 'The same characters appear in a different order. Identifiers have format and context, so a swapped pair points at a different record.', f: 'Copy and paste identifiers. Read the last three digits backwards. Cross-check with a second document.' };
+  if (s.length === e.length) {
+    const n = [...s].filter((c, i) => c !== e[i]).length;
+    if (n === 1) return { t: 'Substitution', x: 'One character differs. In a name or an ID, one character changes who or what the record points to.', f: 'Read names and IDs character by character. Search for the entity before you type it.' };
+    return { t: 'Several characters differ', x: 'This looks like a wrong value, not a typing slip.', f: 'Re-read the label next to the value. Issue, Effective and Expiration dates, or Each Occurrence and Aggregate limits, are easy to confuse.' };
+  }
+  if (s.length - e.length === 1) for (let i = 0; i < s.length; i++) if (s.slice(0, i) + s.slice(i + 1) === e)
+    return { t: 'Omission', x: 'A character is missing from the entry.', f: 'Copy and paste instead of retyping. Compare the lengths before you submit.' };
+  if (e.length - s.length === 1) for (let i = 0; i < e.length; i++) if (e.slice(0, i) + e.slice(i + 1) === s)
+    return { t: 'Extra character', x: 'The entry has a character the source does not.', f: 'Copy and paste instead of retyping. Compare the lengths before you submit.' };
+  return { t: 'Several characters differ', x: 'The lengths and the characters both differ.', f: 'Re-read the label next to the value and confirm you copied the right field.' };
+}
+function paint(target, text, other, isEntry) {
+  target.textContent = '';
+  const len = Math.max(text.length, other.length);
+  for (let i = 0; i < len; i++) {
+    const ch = text[i];
+    const differs = ch !== other[i];
+    if (ch === undefined) { if (isEntry) target.append(el('i', { class: 'd gap', text: '–' })); continue; }
+    target.append(el('i', { class: differs ? 'd' : '', text: ch === ' ' ? ' ' : ch }));
+  }
+}
+function runDiff() {
+  const s = $('#src').value, e = $('#ent').value;
+  paint($('#srcOut'), s, e, false);
+  paint($('#entOut'), e, s, true);
+  const c = classify(s, e);
+  $('#verdict').textContent = c.t;
+  $('#explain').textContent = c.x;
+  $('#fix').textContent = 'Control: ' + c.f;
+}
+[['Transposition', 'ABC-123456', 'ABC-123465'], ['Suffix', 'John Smith Jr.', 'John Smith Sr.'], ['Wrong date', 'Effective 01/01/2027', 'Effective 12/15/2026'], ['Omission', 'Quayside Property Holdings', 'Quayside Property Holding'], ['Match', 'GLP-4471920', 'GLP-4471920']]
+  .forEach(([n, s, e]) => $('#presets').append(el('button', { class: 'chip', type: 'button', text: n, onclick: () => { $('#src').value = s; $('#ent').value = e; runDiff(); } })));
+$('#src').addEventListener('input', runDiff);
+$('#ent').addEventListener('input', runDiff);
+runDiff();
+
+/* ---------- seven principles ---------- */
+const PRINCIPLES = [
+  ['Insurance is a contract', 'A policy defines parties, policy period, coverage line, limits, deductibles, conditions, endorsements and premium. A value on a page only means something as a term of that contract.', 'Before you copy a number, name the term it belongs to and the party it binds.'],
+  ['Documents are evidence of the contract', 'A quote is not a policy. A binder may provide temporary coverage. An endorsement changes the policy. The latest controlling document usually wins, but follow the official source hierarchy.', 'Identify the document type first. Then decide which document controls each field.'],
+  ['A process is a transformation chain', 'Source document, extracted data, validation, system entry, output, audit. Errors happen when information is lost, corrupted, assumed or entered in the wrong field.', 'Name the link where your last error entered the chain. That link needs a control.'],
+  ['Audit is comparison plus rules', 'An auditor compares what was entered against the source document and against business rules. If it does not match, it is an error.', 'Audit your own work the same way, before the auditor does: source on one side, entry on the other.'],
+  ['An error is a deviation', 'Types: wrong field, omission, transposition, wrong date, wrong party, wrong limit, wrong amount, duplicate, missing document and misclassification.', 'Classify every error by type. Types repeat, and a repeating type points to a weak control.'],
+  ['Humans have limited working memory', 'Error reduction comes from externalizing memory: checklists, templates, naming rules, cross-checks, quiet time and feedback loops.', 'If you rely on remembering, you will eventually forget. Put it on the checklist.'],
+  ['Prevention beats detection', 'The goal is first-pass yield: doing it right the first time, not catching errors later.', 'Each late catch costs rework and audit exposure. Put the control before the entry.']
+];
+PRINCIPLES.forEach(([t, b, d], i) => {
+  const det = el('details', { class: 'acc' });
+  if (i === 0) det.open = true;
+  det.append(el('summary', { text: t }), el('div', { class: 'body' }, el('p', { text: b }), el('p', { class: 'do' }, el('b', { text: 'At your desk: ' }), d)));
+  $('#principleList').append(det);
+});
+
+/* ---------- chain ---------- */
+const CHAIN = [
+  ['Source', 'Receive and index', 'The document is evidence of the contract. Identify the document type and the line of business, then rank it against the other documents on the case.', 'Treating a quote as a policy, or a certificate as the contract itself.', 'Identify the type, then apply the source hierarchy before you read a single value.'],
+  ['Extract', 'Pull values', 'Take each value together with its label. The label is part of the value.', 'Lifting a number without its label, or copying the first name in a list.', 'Copy and paste identifiers, read names character by character, and note date semantics.'],
+  ['Validate', 'Apply rules', 'Check the value against the rule for its field type: effective on or before expiration, occurrence within aggregate, premium plus tax plus fees equals total.', 'A value that is well formed but wrong, such as a valid date in the wrong field.', 'Run the rule for each field type. One identifier is never enough.'],
+  ['Enter', 'Put it in the system', 'Place each value in the field that matches its full label. The system has rules, so learn where fields live and which are mandatory.', 'Wrong field, duplicate records, and values entered from memory.', 'Search before you create. Match the whole label to the field.'],
+  ['Cross-check', 'Confirm with a second key', 'Policy number, named insured and effective date must align with each other and with other documents on the case.', 'A single identifier that matches by accident.', 'Use a three-point alignment: policy number, name, date.'],
+  ['Exception', 'Handle what is missing', 'Missing documents, ambiguous dates, illegible text and conflicting sources are exceptions. No data is better than wrong data.', 'Assuming. Absence of evidence is not evidence of absence.', 'Flag, use the exception code, and escalate with evidence: case ID, issue, source, what you checked, what you need.'],
+  ['Self-QC', 'Audit yourself', 'Read the entered data against the source aloud. Recalculate totals. Confirm mandatory fields.', 'Checking from memory instead of from the source.', 'Use the one-page checklist every time.'],
+  ['Submit', 'Archive and learn', 'Submit and archive. Later, an audit compares your entry with the source and the rules, and feedback returns to you.', 'Treating a finding as a verdict instead of data.', 'Log the error, find the root cause, update the hub, and re-audit after one week.']
+];
+let chainIdx = 0;
+function renderChain() {
+  $('#chainRail').textContent = '';
+  CHAIN.forEach((c, i) => {
+    const b = el('button', { type: 'button', role: 'tab', 'aria-selected': String(i === chainIdx), tabindex: i === chainIdx ? '0' : '-1', onclick: () => { chainIdx = i; renderChain(); } }, el('b', { text: (i + 1) + '. ' + c[0] }), el('span', { text: c[1] }));
+    b.addEventListener('keydown', (ev) => {
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') {
+        chainIdx = (chainIdx + (ev.key === 'ArrowRight' ? 1 : CHAIN.length - 1)) % CHAIN.length;
+        renderChain(); $$('#chainRail button')[chainIdx].focus();
+      }
+    });
+    $('#chainRail').append(el('li', { role: 'presentation' }, b));
+  });
+  const c = CHAIN[chainIdx];
+  $('#chainPanel').textContent = '';
+  $('#chainPanel').append(el('div', { class: 'panel-grid' },
+    el('div', {}, el('h3', { text: 'What happens' }), el('p', { text: c[2] })),
+    el('div', {}, el('h3', { text: 'Where it goes wrong' }), el('p', { text: c[3] })),
+    el('div', {}, el('h3', { text: 'The control' }), el('p', { text: c[4] }))));
+}
+renderChain();
+
+/* ---------- anatomy ---------- */
+const FIELDS = [
+  ['Named insured', 'Harbor Valley Bakery LLC', 'The legal party to the contract.', 'Exact legal entity name, including suffix and punctuation.', 'Entering the first name in a list, or changing a suffix.'],
+  ['Policy number', 'GLP-4471920', 'The unique identifier for the policy.', 'Check the format and the check digit, and confirm it is consistent across documents.', 'Transposed digits. Search the number before you create a record.'],
+  ['Carrier / market', 'Ridgeline Mutual', 'Who bears the risk.', 'Must match the source.', 'Copying a name from the page header instead of the labelled field.'],
+  ['Issue date', 'Dec 15, 2026', 'When the document was produced. It says nothing about when coverage runs.', 'The issue date is not the coverage date.', 'Entering it as the effective date.'],
+  ['Effective date', 'Jan 1, 2027', 'When coverage starts.', 'Not the issue date. Must be on or before the expiration date.', 'Picking the most prominent date on the page.'],
+  ['Expiration date', 'Jan 1, 2028', 'When coverage ends.', 'Must be after the effective date.', 'Carrying over last year’s date, or entering a date before the effective date.'],
+  ['Line of business', 'Commercial General Liability', 'The type of coverage: GL, property, auto, workers’ compensation and so on.', 'Classify before you extract, because the line decides which fields apply.', 'Misclassification. Everything after it is then entered against the wrong template.'],
+  ['Limits', 'Each Occurrence $1,000,000\nGeneral Aggregate $2,000,000', 'How much coverage there is.', 'Separate occurrence, aggregate and sub-limit. Match the whole label to the field.', 'Entering the aggregate as each occurrence.'],
+  ['Deductible / SIR', '$2,500 per occurrence', 'The insured’s share of a loss.', 'Numeric, and tied to per occurrence or aggregate.', 'Dropping the basis (per occurrence or aggregate).'],
+  ['Premium', '$10,000', 'The cost of coverage.', 'Keep it separate from taxes, fees and the total. Recalculate the total.', 'Entering the total as the premium.'],
+  ['Commission', '12% of premium ($1,200)', 'Broker revenue.', 'Rate times premium, where applicable.', 'Applying the rate to the total instead of the premium.'],
+  ['Endorsements', 'End. 1 Waiver of subrogation\nEnd. 2 Additional insured', 'Changes to the policy.', 'The latest effective version controls.', 'Entering the base policy value and missing the change.'],
+  ['Additional insured', 'Quayside Property Holdings', 'An extra protected party.', 'Not the named insured.', 'Role swap: entering the additional insured as the named insured.'],
+  ['Loss payee / mortgagee', 'Harborline Credit Union', 'A party with a financial interest.', 'Role-specific. Check the role label.', 'Entering it under the wrong role.'],
+  ['Locations', '14 Mill Lane, Unit 3', 'The risk details: locations, vehicles, drivers.', 'Address, VIN and class code as the source shows them.', 'Dropping a unit number or a digit from a VIN.']
+];
+let fieldIdx = 1;
+function renderFields() {
+  $('#cells').textContent = '';
+  FIELDS.forEach((f, i) => {
+    const v = el('span', { text: f[1].replace('\n', ' / ') });
+    $('#cells').append(el('button', { class: 'cell', type: 'button', 'aria-pressed': String(i === fieldIdx), onclick: () => { fieldIdx = i; renderFields(); } }, el('small', { text: f[0] }), v));
+  });
+  const f = FIELDS[fieldIdx];
+  const d = $('#cellDetail');
+  d.textContent = '';
+  d.append(el('h3', { text: f[0] }), el('dl', { class: 'dl', style: 'margin:12px 0 0' },
+    el('div', {}, el('dt', { text: 'Why it matters' }), el('dd', { text: f[2] })),
+    el('div', {}, el('dt', { text: 'Validation rule' }), el('dd', { text: f[3] })),
+    el('div', {}, el('dt', { text: 'How it usually goes wrong' }), el('dd', { text: f[4] }))));
+}
+renderFields();
+
+/* ---------- authority ---------- */
+const LADDER = [
+  ['Endorsement', 'Changes the policy. The latest effective version controls the changed term.'],
+  ['Policy', 'The contract itself: parties, period, coverage line, limits, conditions, premium.'],
+  ['Binder', 'May provide temporary coverage until the policy is issued.'],
+  ['Invoice / statement', 'Evidence of amounts due. Premium, tax, fees and total are separate lines.'],
+  ['Certificate of insurance', 'A summary for a third party. Evidence of coverage, not the contract.'],
+  ['Quote', 'An offer. It is not coverage and it is not a policy.'],
+  ['Application', 'What was asked for and disclosed. Context, not terms.'],
+  ['Loss run', 'Claims history. If it has not arrived, the history is unknown, not zero.']
+];
+LADDER.forEach(([t, d]) => $('#ladder').append(el('li', {}, el('b', { text: t }), el('span', { text: d }))));
+
+const QUIZ = [
+  ['The policy states a $1M each-occurrence limit. Endorsement #2, effective the same day, states $2M. What do you enter?', ['$1M, from the policy', '$2M, from endorsement #2', 'Nothing yet; ask someone'], 1, 'An endorsement changes the policy, and the latest effective version controls. Record the source you used.'],
+  ['A quote shows premium $9,800. The invoice lists premium $10,000, tax $300, fees $50, total $10,350. What is the premium?', ['$9,800', '$10,350', '$10,000'], 2, 'A quote is an offer. The invoice has a premium line, and the total includes tax and fees.'],
+  ['A certificate of insurance shows a limit that differs from the policy. Which wins?', ['The certificate, because it is newer', 'The policy, and flag the mismatch', 'Enter the average'], 1, 'A certificate is evidence of coverage, not the contract. Follow your SOP’s hierarchy and raise the discrepancy as an exception.'],
+  ['The system requires claims history, but the loss run has not arrived. What do you enter?', ['0 claims', 'Leave it blank without a note', 'Flag it missing, use the exception code, request the document'], 2, 'Absence of evidence is not evidence of absence. No data is better than wrong data.']
+];
+QUIZ.forEach(([q, opts, ans, why], qi) => {
+  const wrap = el('div', { class: 'q' }, el('p', { text: q }));
+  const box = el('div', { class: 'opts' });
+  const out = el('p', { class: 'expl', 'aria-live': 'polite' });
+  opts.forEach((o, i) => {
+    const b = el('button', { class: 'opt', type: 'button', text: o });
+    b.addEventListener('click', () => {
+      $$('button', box).forEach((x, xi) => { x.disabled = true; if (xi === ans) x.classList.add('right'); });
+      if (i !== ans) b.classList.add('wrong');
+      out.textContent = (i === ans ? 'Correct. ' : 'Not quite. ') + why;
+    });
+    box.append(b);
+  });
+  wrap.append(box, out);
+  $('#quiz').append(wrap);
+});
+
+/* ---------- validators ---------- */
+const li = (state, text) => el('li', {}, el('span', { class: 'tag ' + state, text: state === 'pass' ? 'Pass' : state === 'fail' ? 'Fix' : 'Note' }), el('span', { text }));
+const days = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+function fmtDate(d) { return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+function runDates() {
+  const i = $('#dIssue').value, e = $('#dEff').value, x = $('#dExp').value;
+  const r = $('#dRes'); r.textContent = '';
+  if (!i || !e || !x) { r.append(li('note', 'Enter all three dates.')); return; }
+  if (e > x) r.append(li('fail', 'Expiration is before effective. Re-read both labels on the source.'));
+  else if (e === x) r.append(li('fail', 'The term is zero days. Expiration must be after effective.'));
+  else r.append(li('pass', 'Effective is before expiration.'));
+  const t = days(e, x);
+  if (t > 0) r.append(li(t === 365 || t === 366 ? 'pass' : 'note', t === 365 || t === 366 ? 'The term is ' + t + ' days, a standard annual term.' : 'The term is ' + t + ' days. That is not a standard 12-month term, so confirm it against the source.'));
+  const g = days(i, e);
+  if (g === 0) r.append(li('note', 'Issue and effective match. Still confirm which date the source labels Effective.'));
+  else if (g < 0) r.append(li('note', 'The document was issued ' + (-g) + ' days after coverage starts. Check the source before you enter either date.'));
+  else r.append(li('note', 'Issued ' + g + ' days before coverage starts. Enter ' + fmtDate(e) + ' as Effective, not the issue date.'));
+}
+function runMoney() {
+  const p = num('#mPrem'), t = num('#mTax'), f = num('#mFee'), d = num('#mDoc'), s = num('#mSys');
+  const r = $('#mRes'); r.textContent = '';
+  if ([p, t, f, d, s].some(Number.isNaN)) { r.append(li('note', 'Fill in every amount.')); return; }
+  const total = p + t + f;
+  r.append(li('note', 'Recalculated total: ' + usd.format(total) + '.'));
+  r.append(li(Math.abs(total - d) < 0.005 ? 'pass' : 'fail', Math.abs(total - d) < 0.005 ? 'The document total adds up.' : 'The document shows ' + usd.format(d) + ' but the lines add to ' + usd.format(total) + '. Treat it as an exception.'));
+  if (Math.abs(s - p) < 0.005) r.append(li('pass', 'The Premium field matches the premium line.'));
+  else if (Math.abs(s - total) < 0.005) r.append(li('fail', 'That is the total, not the premium. Financial fields have components.'));
+  else r.append(li('fail', 'The Premium field matches no line on the document. Recheck the source.'));
+}
+function runLimits() {
+  const o = num('#lOcc'), a = num('#lAgg'), s = num('#lSys');
+  const r = $('#lRes'); r.textContent = '';
+  if ([o, a, s].some(Number.isNaN)) { r.append(li('note', 'Fill in every limit.')); return; }
+  r.append(li(o <= a ? 'pass' : 'fail', o <= a ? 'Each Occurrence does not exceed the General Aggregate.' : 'Each Occurrence is above the aggregate. Re-read the two labels.'));
+  if (s === o) r.append(li('pass', 'The system field matches Each Occurrence.'));
+  else if (s === a) r.append(li('fail', 'That is the General Aggregate, not Each Occurrence. Match the full label to the field.'));
+  else r.append(li('fail', 'The system field matches neither limit. Recheck the source and any endorsement.'));
+  r.append(li('note', 'Sub-limits are a third scope. Check for them before you call the limits complete.'));
+}
+['#dIssue', '#dEff', '#dExp'].forEach((s) => $(s).addEventListener('input', runDates));
+['#mPrem', '#mTax', '#mFee', '#mDoc', '#mSys'].forEach((s) => $(s).addEventListener('input', runMoney));
+['#lOcc', '#lAgg', '#lSys'].forEach((s) => $(s).addEventListener('input', runLimits));
+runDates(); runMoney(); runLimits();
+
+/* ---------- audit desk ---------- */
+const CASES = [
+  {
+    name: 'General liability',
+    src: [['Named insured', 'Harbor Valley Bakery LLC'], ['Additional insured', 'Quayside Property Holdings'], ['Policy number', 'GLP-4471920'], ['Issue date', 'Dec 15, 2026'], ['Effective date', 'Jan 1, 2027'], ['Expiration date', 'Jan 1, 2028'], ['Each Occurrence', '$1,000,000'], ['General Aggregate', '$2,000,000'], ['Premium', '$10,000'], ['Taxes', '$300'], ['Fees', '$50'], ['Total due', '$10,350']],
+    ent: [
+      ['Named insured', 'Harbor Valley Bakery LLC', null],
+      ['Additional insured', 'Quayside Property Holdings', null],
+      ['Policy number', 'GLP-4471290', 'Transposition. The last three digits are swapped (920 became 290). Copy and paste identifiers and read the end backwards.'],
+      ['Effective date', 'Dec 15, 2026', 'Wrong date field. That is the issue date. Coverage starts Jan 1, 2027.'],
+      ['Expiration date', 'Jan 1, 2028', null],
+      ['Each Occurrence limit', '$2,000,000', 'Wrong limit. $2,000,000 is the General Aggregate. Each Occurrence is $1,000,000.'],
+      ['Premium', '$10,350', 'Wrong amount. That is the total due. Premium is $10,000 before taxes and fees.'],
+      ['Taxes', '$300', null]
+    ]
+  },
+  {
+    name: 'Commercial auto',
+    src: [['Named insured', 'Marlowe & Finch Logistics Inc.'], ['Additional insured', 'Dunmore Freight Terminals'], ['Carrier', 'Ridgeline Mutual'], ['Policy number', 'CA-8820145'], ['Effective date', 'Mar 1, 2027'], ['Expiration date', 'Mar 1, 2028'], ['Combined single limit', '$1,000,000'], ['Endorsement 2', 'Effective Mar 1, 2027. Changes combined single limit to $2,000,000'], ['Deductible', '$5,000 per occurrence'], ['Loss run', 'Not received']],
+    ent: [
+      ['Named insured', 'Dunmore Freight Terminals', 'Wrong party. That is the additional insured. Party roles define rights, so never copy the first name in a list.'],
+      ['Carrier', 'Ridgeline Mutual', null],
+      ['Policy number', 'CA-8820145', null],
+      ['Effective date', 'Mar 1, 2027', null],
+      ['Expiration date', 'Mar 1, 2026', 'Wrong date. The entry expires a year before it starts. The validation rule effective on or before expiration would have caught it.'],
+      ['Combined single limit', '$1,000,000', 'Missed endorsement. Endorsement 2 changes the limit to $2,000,000 and the latest effective version controls.'],
+      ['Deductible', '$5,000 per occurrence', null],
+      ['Claims history', '0 claims', 'Assumption. The loss run was not received. Flag it missing, use the exception code and request the document.']
+    ]
+  }
+];
+const desk = { c: 0, flags: new Set(), done: false };
+function renderCaseTabs() {
+  const box = $('#caseTabs'); box.textContent = '';
+  CASES.forEach((c, i) => box.append(el('button', { class: 'chip', type: 'button', 'aria-pressed': String(i === desk.c), style: i === desk.c ? 'background:var(--accent);color:var(--on-accent);border-color:var(--accent)' : '', text: 'Case ' + (i + 1) + ': ' + c.name, onclick: () => { desk.c = i; desk.flags = new Set(); desk.done = false; renderDesk(); } })));
+}
+function renderDesk() {
+  renderCaseTabs();
+  const c = CASES[desk.c];
+  const s = $('#deskSrc'); s.textContent = '';
+  s.append(el('h3', { text: 'Source document' }), el('ul', { class: 'kv' }, ...c.src.map(([k, v]) => el('li', {}, el('span', { class: 'k', text: k }), el('span', { class: 'v', text: v })))));
+  const e = $('#deskEnt'); e.textContent = '';
+  const list = el('ul', { class: 'entry' });
+  c.ent.forEach(([k, v, why], i) => {
+    const row = el('li', { class: 'erow' });
+    const flagged = desk.flags.has(i);
+    const btn = el('button', { class: 'flag', type: 'button', 'aria-pressed': String(flagged), text: flagged ? 'Flagged' : 'Flag', 'aria-label': (flagged ? 'Unflag ' : 'Flag ') + k });
+    btn.addEventListener('click', () => { if (desk.done) return; flagged ? desk.flags.delete(i) : desk.flags.add(i); renderDesk(); });
+    if (desk.done) {
+      btn.disabled = true;
+      const isErr = why !== null;
+      if (isErr && flagged) row.classList.add('hit');
+      else if (isErr) row.classList.add('miss');
+      else if (flagged) row.classList.add('false');
+    }
+    row.append(el('div', { class: 'top' }, el('div', {}, el('div', { class: 'lbl', text: k }), el('div', { class: 'val', text: v })), btn));
+    if (desk.done) {
+      if (why) row.append(el('p', { class: 'why', text: (flagged ? 'Caught. ' : 'Missed. ') + why }));
+      else if (desk.flags.has(i)) row.append(el('p', { class: 'why', text: 'False flag. This entry matches the source.' }));
+    }
+    list.append(row);
+  });
+  e.append(el('h3', { text: 'System entry' }), list);
+  $('#deskCheck').disabled = desk.done;
+  const out = $('#deskScore'); out.textContent = '';
+  if (desk.done) {
+    const errs = c.ent.map((r, i) => (r[2] ? i : -1)).filter((i) => i >= 0);
+    const caught = errs.filter((i) => desk.flags.has(i)).length;
+    const falses = [...desk.flags].filter((i) => !c.ent[i][2]).length;
+    out.append(el('strong', { text: 'You caught ' + caught + ' of ' + errs.length + ' errors' + (falses ? ' and flagged ' + falses + ' correct ' + (falses === 1 ? 'entry' : 'entries') : '') + '.' }),
+      el('p', { class: 'muted', text: caught === errs.length && !falses ? 'A clean audit. Your comparison was by label and role, not by eye.' : 'Log each miss with its error type, then ask which link in the chain should have caught it.' }));
+  }
+}
+$('#deskCheck').addEventListener('click', () => { desk.done = true; renderDesk(); });
+$('#deskReset').addEventListener('click', () => { desk.flags = new Set(); desk.done = false; renderDesk(); });
+renderDesk();
+
+/* ---------- scenarios ---------- */
+const STAGES = ['Extract', 'Validate', 'Enter', 'Exception'];
+const SC = [
+  ['Transposed policy number', 'ABC-123456', 'ABC-123465', 'Identifiers have format and context.', 'Transposition', 'Copy and paste. Read the last 3 digits backwards. Cross-check with another document.', 'Extract'],
+  ['Issue date entered as effective', 'Issue 12/15/2024\nEffective 01/01/2025', 'Effective 12/15/2024', 'Dates have semantic labels.', 'Wrong date field', 'Highlight the labels: Issue is not Effective is not Expiration.', 'Extract'],
+  ['Additional insured as named insured', 'Named Insured ABC LLC\nAdditional Insured XYZ Property', 'Named insured XYZ Property', 'Party roles define rights.', 'Role swap', 'Use role-based fields. Never copy the first name in a list.', 'Extract'],
+  ['Aggregate as each occurrence', 'Each Occurrence $1M\nGeneral Aggregate $2M', 'Each Occurrence $2M', 'Limits have hierarchy and scope.', 'Wrong limit field', 'Match the full label to the field. Read Each Occurrence against Aggregate.', 'Extract'],
+  ['Endorsement missed', 'Policy $1M\nEndorsement #2 changes it to $2M', '$1M', 'The latest controlling document modifies the contract.', 'Missed endorsement', 'Check the endorsement list. Apply by effective date. Document the source.', 'Validate'],
+  ['Claims assumed to be zero', 'Loss run not received', '0 claims', 'Absence of evidence is not evidence of absence.', 'Assumption', 'Flag it as missing, use the exception code and request the document.', 'Exception'],
+  ['Total entered as premium', 'Premium $10,000, fee $50, tax $300, total $10,350', 'Premium $10,350', 'Financial fields have components and formulas.', 'Total versus premium confusion', 'Separate premium, tax, fees and total. Recalculate.', 'Extract'],
+  ['Suffix changed', 'John Smith Jr.', 'John Smith Sr.', 'Identity is exact.', 'Suffix error', 'Check names character by character. Use entity search.', 'Extract'],
+  ['Same policy entered twice', 'One policy on two documents', 'Two records created', 'Unique keys prevent duplicates.', 'Duplicate entry', 'Search the policy number before you create a record.', 'Enter'],
+  ['Ambiguous date', '03/04/2025', 'Read as 3 April, meant 4 March', 'Ambiguity requires verification.', 'Date format confusion', 'Use the system format and cross-check with the expiration and issue dates.', 'Validate']
+];
+let scIdx = 0;
+function renderSc() {
+  const ul = $('#scList'); ul.textContent = '';
+  SC.forEach((s, i) => ul.append(el('li', {}, el('button', { type: 'button', 'aria-current': String(i === scIdx), onclick: () => { scIdx = i; renderSc(); } }, el('span', { class: 'n', text: String(i + 1) }), el('span', { text: s[0] })))));
+  const s = SC[scIdx];
+  const d = $('#scDetail'); d.textContent = '';
+  const mono = (t) => el('span', { class: 'mono', style: 'white-space:pre-wrap', text: t });
+  d.append(el('div', { style: 'display:grid;gap:16px' },
+    el('h3', { text: s[0] }),
+    el('div', { class: 'pair' }, el('div', {}, el('span', { class: 'lab', text: 'The source says' }), mono(s[1])), el('div', { class: 'bad' }, el('span', { class: 'lab', text: 'What was entered' }), mono(s[2]))),
+    el('div', {}, el('span', { class: 'lab', text: 'First principle' }), el('p', { text: s[3] })),
+    el('div', {}, el('span', { class: 'lab', text: 'Error type' }), el('p', { text: s[4] })),
+    el('div', {}, el('span', { class: 'lab', text: 'Prevention' }), el('p', { text: s[5] })),
+    el('div', {}, el('span', { class: 'lab', text: 'Where the chain broke' }), el('div', { class: 'stagebar' }, ...STAGES.map((g) => el('span', { class: g === s[6] ? 'on' : '', text: g }))))));
+}
+renderSc();
+
+/* ---------- five whys + gaps ---------- */
+const WHYS = [['Why was the effective date wrong?', 'I entered the issue date.'], ['Why?', 'The two dates looked similar.'], ['Why?', 'There was no visual separation on the page.'], ['Why?', 'The source layout is cluttered.'], ['Why?', 'No checklist step covers date semantics.']];
+let whyN = 0;
+function renderWhys() {
+  const ol = $('#whys'); ol.textContent = '';
+  WHYS.slice(0, whyN).forEach((w, i) => ol.append(el('li', {}, el('span', { class: 'w', text: 'Why ' + (i + 1) }), el('span', {}, el('b', { text: w[0] + ' ' }), w[1]))));
+  if (whyN === 0) ol.append(el('li', {}, el('span', { class: 'w', text: 'Error' }), el('span', { text: 'The effective date in the system is the issue date from the source.' })));
+  if (whyN === WHYS.length) ol.append(el('li', { class: 'fix' }, el('span', { class: 'w', text: 'Fix' }), el('span', { text: 'Add a date-label check to the SOP and the checklist.' })));
+  $('#whyNext').disabled = whyN >= WHYS.length;
+  $('#whyNext').textContent = whyN === 0 ? 'Ask why' : 'Ask why again';
+}
+$('#whyNext').addEventListener('click', () => { whyN++; renderWhys(); });
+$('#whyReset').addEventListener('click', () => { whyN = 0; renderWhys(); });
+renderWhys();
+
+const GAPS = [
+  ['Knowledge gap', 'I did not know the rule.', 'Add the term or rule to the glossary and teach it back to a colleague.'],
+  ['Process gap', 'The steps did not cover it.', 'Add a step to the SOP and the checklist. The date-label check above is a process fix.'],
+  ['System gap', 'The tool let it through.', 'Ask for a field validation, a dropdown or an exception code. Search before create.'],
+  ['Attention gap', 'I knew it, and I slipped.', 'Quiet time, batch similar work, copy and paste identifiers, and read aloud against the source.']
+];
+GAPS.forEach(([t, s, f], i) => {
+  const b = el('button', { class: 'gapbtn', type: 'button', 'aria-pressed': 'false' }, el('b', { text: t }), el('span', { text: s }));
+  b.addEventListener('click', () => {
+    $$('.gapbtn').forEach((x) => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', 'true');
+    $('#gapOut').textContent = 'Typical fix: ' + f;
+  });
+  $('#gaps').append(b);
+});
+$('#gapOut').textContent = 'Pick the gap that best describes your last finding to see the usual fix.';
+
+/* ---------- error log (in memory only) ---------- */
+const today = new Date().toISOString().slice(0, 10);
+$('#lgDate').value = today;
+const LOG = [
+  { d: '2025-01-10', c: '12345', f: 'Effective date', e: '01/01/2025', a: '12/15/2024', t: 'Wrong date', r: 'Confused issue and effective', p: 'Highlight date labels', i: 'Medium', ex: true },
+  { d: '2025-01-11', c: '12346', f: 'Policy number', e: 'ABC-123456', a: 'ABC-123465', t: 'Transposition', r: 'Fast typing', p: 'Copy and paste, read backwards', i: 'High', ex: true }
+];
+function renderLog() {
+  const tb = $('#logBody'); tb.textContent = '';
+  LOG.forEach((r, idx) => {
+    const del = el('button', { class: 'chip', type: 'button', text: 'Remove', 'aria-label': 'Remove log row ' + (idx + 1), onclick: () => { LOG.splice(idx, 1); renderLog(); } });
+    tb.append(el('tr', {}, ...[r.d, r.c, r.f, r.e, r.a, r.t, r.r, r.p].map((v) => el('td', { text: v })),
+      el('td', {}, el('span', { class: 'tag ' + (r.i === 'High' ? 'fail' : r.i === 'Medium' ? 'note' : 'plain'), text: r.i }), r.ex ? el('span', { class: 'tag plain', text: ' example', style: 'margin-left:6px' }) : ''),
+      el('td', {}, del)));
+  });
+  if (!LOG.length) tb.append(el('tr', {}, el('td', { colspan: '10', class: 'muted', text: 'No entries yet. Add the first error you found in a self-audit.' })));
+}
+$('#logForm').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  LOG.push({ d: $('#lgDate').value, c: $('#lgCase').value.trim(), f: $('#lgField').value.trim(), e: $('#lgExp').value.trim(), a: $('#lgAct').value.trim(), t: $('#lgType').value, r: $('#lgRoot').value.trim(), p: $('#lgPrev').value.trim(), i: $('#lgImpact').value });
+  ['#lgCase', '#lgField', '#lgExp', '#lgAct', '#lgRoot', '#lgPrev'].forEach((s) => { $(s).value = ''; });
+  renderLog();
+});
+$('#logCopy').addEventListener('click', async (ev) => {
+  const text = ['Date | Case ID | Field | Expected | Actual | Error Type | Root Cause | Prevention | Audit Impact', ...LOG.map((r) => [r.d, r.c, r.f, r.e, r.a, r.t, r.r, r.p, r.i].join(' | '))].join('\n');
+  const ta = $('#logText'); ta.value = text;
+  try { await navigator.clipboard.writeText(text); ev.target.textContent = 'Copied'; setTimeout(() => { ev.target.textContent = 'Copy log as text'; }, 1600); ta.hidden = true; }
+  catch { ta.hidden = false; ta.select(); ev.target.textContent = 'Select the text below and copy it'; }
+});
+renderLog();
+
+/* ---------- checklist ---------- */
+const CL = [
+  ['Before opening a case', ['Clear desk, close chat, silence phone.', 'Batch similar work.', 'Open the correct SOP and checklist.', 'Confirm case ID and document type.']],
+  ['During processing', ['Identify the source hierarchy.', 'Extract slowly and copy-paste identifiers.', 'Validate dates: effective, expiration, issue.', 'Validate parties: named insured, additional insured, loss payee.', 'Validate amounts: premium, tax, fees, total.', 'Check limits against their labels.', 'Check endorsements for changes.', 'Search before creating.']],
+  ['After entry', ['Read entered data against the source aloud.', 'Cross-check policy number, name and date.', 'Recalculate totals.', 'Confirm mandatory fields.', 'Log exceptions.', 'Self-QC using the one-page checklist.']],
+  ['End of day', ['Update the error log.', 'Note one improvement for tomorrow.', 'Do the 5-minute desk reset.']]
+];
+const ticks = new Set(store.get('daf-ticks', []));
+function renderCL() {
+  const body = $('#clBody'); body.textContent = '';
+  let total = 0;
+  CL.forEach(([title, items], gi) => {
+    const fs = el('fieldset', {}, el('legend', { text: title }));
+    items.forEach((t, ii) => {
+      const id = 'cl-' + gi + '-' + ii; total++;
+      const cb = el('input', { type: 'checkbox', id });
+      cb.checked = ticks.has(id);
+      cb.addEventListener('change', () => { cb.checked ? ticks.add(id) : ticks.delete(id); store.set('daf-ticks', [...ticks]); updateCL(total); });
+      fs.append(el('label', { class: 'tick', for: id }, cb, el('span', { text: t })));
+    });
+    body.append(fs);
+  });
+  updateCL(total);
+}
+function updateCL(total) {
+  $('#clCount').textContent = ticks.size + ' of ' + total + ' done';
+  $('#clBar').style.width = (total ? (ticks.size / total) * 100 : 0) + '%';
+}
+$('#clReset').addEventListener('click', () => { ticks.clear(); store.set('daf-ticks', []); renderCL(); });
+renderCL();
+
+/* ---------- modules ---------- */
+const MODS = [
+  ['Process map', 'You cannot improve a process you cannot see.', 'Draw a swimlane map: intake, index, classify, extract, validate, enter, QC, submit.', 'For one case type, write every step and every handoff.'],
+  ['Insurance 101', 'Data only has meaning inside the contract structure.', 'Parties, policy period, coverage lines, limits, deductibles, endorsements, premium components.', 'Take a sample policy and label every major section.'],
+  ['Document taxonomy', 'Different documents have different authority.', 'Policy, endorsement, binder, quote and certificate compared.', 'Sort 20 documents by authority and purpose.'],
+  ['Data extraction', 'Field labels are part of the value.', 'Copy-paste, read backwards, check names character by character, know date semantics.', 'Extract 10 fields from 5 documents and self-audit.'],
+  ['Validation and cross-checks', 'One identifier is never enough.', 'Policy number, named insured and effective date must align.', 'Create a 5-point cross-check for each document type.'],
+  ['Systems and tools', 'The system has rules, so learn them.', 'Where fields live, mandatory fields, dropdowns, exception codes, search before create.', 'Build a one-page “where to click” guide for your top 3 tasks.'],
+  ['Exception handling', 'No data is better than wrong data.', 'Missing documents, ambiguous dates, illegible text, conflicting sources.', 'Write escalation scripts for 5 common exceptions.'],
+  ['Audit and QC', 'Audit is a feedback loop, not a punishment.', 'Sampling, scoring, error categories, root cause.', 'Self-audit 10 closed cases and log every mismatch.'],
+  ['Root cause analysis', 'Fix the system, not just the instance.', '5 Whys, fishbone, error recurrence.', 'Take one audit error and ask “Why?” five times.'],
+  ['Communication and escalation', 'Clear escalation prevents silent errors.', 'When to ask, what evidence to include, how to phrase it.', 'Write a template: case ID, issue, source, what I checked, what I need.']
+];
+MODS.forEach(([t, fp, learn, drill], i) => {
+  const det = el('details', { class: 'acc' });
+  det.append(el('summary', {}, el('span', { class: 'modnum', text: 'Module ' + i }), el('span', { text: t })),
+    el('div', { class: 'body' }, el('p', { class: 'do' }, el('b', { text: 'First principle: ' }), fp), el('p', {}, el('b', { text: 'Learn: ', style: 'color:var(--ink)' }), learn), el('p', {}, el('b', { text: 'Drill: ', style: 'color:var(--ink)' }), drill)));
+  $('#modList').append(det);
+});
+
+/* ---------- plan + hub ---------- */
+const PLAN = [
+  ['Days 1–30', 'Learn the process, the documents, the systems and the SOPs.', 'You can process simple cases with a checklist.', 'Modules 0 to 3 and 5.'],
+  ['Days 31–60', 'Apply cross-checks, handle exceptions and self-QC.', 'First-pass yield improves.', 'Modules 4, 6 and 7.'],
+  ['Days 61–90', 'Master complex cases, find root causes and train others.', 'You can update the knowledge hub and reduce repeat errors.', 'Modules 8 and 9, plus the hub.']
+];
+let planIdx = 0;
+function renderPlan() {
+  const tabs = $('#planTabs'); tabs.textContent = '';
+  PLAN.forEach((p, i) => {
+    const b = el('button', { type: 'button', role: 'tab', 'aria-selected': String(i === planIdx), tabindex: i === planIdx ? '0' : '-1', text: p[0], onclick: () => { planIdx = i; renderPlan(); } });
+    b.addEventListener('keydown', (ev) => {
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { planIdx = (planIdx + (ev.key === 'ArrowRight' ? 1 : PLAN.length - 1)) % PLAN.length; renderPlan(); $$('#planTabs button')[planIdx].focus(); }
+    });
+    tabs.append(b);
+  });
+  const p = PLAN[planIdx];
+  const out = $('#planPanel'); out.textContent = '';
+  out.append(el('div', {}, el('span', { class: 'lab', text: 'Focus' }), el('p', { text: p[1] })), el('div', {}, el('span', { class: 'lab', text: 'Outcome' }), el('p', { text: p[2] })), el('div', {}, el('span', { class: 'lab', text: 'Suggested modules' }), el('p', { text: p[3] })));
+}
+renderPlan();
+
+const HUB = [['Start Here', 'How to use the hub, contacts, escalation.'], ['Process Maps', 'Swimlanes for each case type.'], ['Insurance 101', 'Glossary, coverage lines, key concepts.'], ['Document Library', 'Examples, source hierarchy, document types.'], ['System How-To', 'Screenshots, field definitions, exception codes.'], ['Checklists', 'One page per document type.'], ['Error Library', 'Real anonymised errors and fixes.'], ['Audit Findings', 'Common audit issues and trends.'], ['Golden Cases', 'Perfect examples with annotations.'], ['FAQs', 'Common questions and answers.'], ['Change Log', 'Version control, owner, review date.'], ['Training Plan', 'The 30-60-90 day path.'], ['Drills', 'Practice exercises and quizzes.']];
+const hubTicks = new Set(store.get('daf-hub', []));
+function renderHub() {
+  const box = $('#hub'); box.textContent = '';
+  HUB.forEach(([t, d], i) => {
+    const id = 'hub-' + i;
+    const cb = el('input', { type: 'checkbox', id });
+    cb.checked = hubTicks.has(id);
+    cb.addEventListener('change', () => { cb.checked ? hubTicks.add(id) : hubTicks.delete(id); store.set('daf-hub', [...hubTicks]); $('#hubCount').textContent = hubTicks.size + ' of ' + HUB.length + ' built'; });
+    box.append(el('label', { class: 'tick', for: id }, cb, el('span', {}, el('b', { text: String(i).padStart(2, '0') + ' ' + t }), el('br'), el('span', { class: 'muted small', text: d }))));
+  });
+  $('#hubCount').textContent = hubTicks.size + ' of ' + HUB.length + ' built';
+}
+renderHub();
+
+/* ---------- metrics ---------- */
+function runMetrics() {
+  const cases = num('#xCases'), clean = num('#xClean'), fields = num('#xFields'), wrong = num('#xWrong'), rep = num('#xRepeat'), exc = num('#xExc'), min = num('#xMin');
+  const out = $('#metricOut'); out.textContent = '';
+  const note = $('#metricNote');
+  if ([cases, clean, fields, wrong, rep, exc, min].some(Number.isNaN)) { note.textContent = 'Fill in every count.'; return; }
+  if (clean > cases || wrong > fields || rep > wrong) { note.textContent = 'Check the counts: right-first-time cannot exceed cases, wrong fields cannot exceed fields checked, and repeat errors cannot exceed wrong fields.'; return; }
+  const acc = fields ? (fields - wrong) / fields : NaN;
+  const fpy = cases ? clean / cases : NaN;
+  const rer = wrong ? rep / wrong : 0;
+  const exr = cases ? exc / cases : NaN;
+  const ct = cases ? min / cases : NaN;
+  const M = [['Accuracy', pct(acc), acc, 'Fields right out of fields checked.'], ['First-pass yield', pct(fpy), fpy, 'Cases with no rework.'], ['Repeat error rate', pct(rer), rer, 'Errors you have made before. Aim for zero.'], ['Exception rate', pct(exr), exr, 'Cases that needed an exception. Not a failure: it means you flagged instead of assumed.'], ['Cycle time', Number.isFinite(ct) ? ct.toFixed(1) + ' min' : 'n/a', null, 'Average minutes per case.']];
+  M.forEach(([n, v, f, d]) => out.append(el('div', { class: 'metric' }, el('span', { class: 'lab', text: n }), el('strong', { text: v }), f === null || !Number.isFinite(f) ? '' : el('div', { class: 'meter', 'aria-hidden': 'true' }, el('i', { style: 'width:' + Math.min(100, f * 100) + '%' })), el('span', { class: 'muted small', text: d }))));
+  note.textContent = Number.isFinite(acc) && Number.isFinite(fpy) && fpy < acc
+    ? 'Accuracy reads ' + pct(acc) + ' while first-pass yield reads ' + pct(fpy) + '. A wrong field spoils the whole case, which is why first-pass yield is the stricter measure.'
+    : '';
+}
+$$('#xCases,#xClean,#xFields,#xWrong,#xRepeat,#xExc,#xMin').forEach((n) => n.addEventListener('input', runMetrics));
+runMetrics();
+})();
+</script>
+
+</body></html>
